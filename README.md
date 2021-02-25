@@ -64,4 +64,11 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 ### 4. Total loss
 ![image](https://user-images.githubusercontent.com/70633080/109122231-a0640100-778b-11eb-9678-848403c2e89f.png)
 - λcls, λrec : 하이퍼파라미터임. domain분류와 reconstruction loss들의 상대적인 중요도를 컨트롤함.
-- D는 adversarial loss를 maximize하길 원하기 때문에 
+  - 논문에서 λcls = 1로, λrec=10으로 설정
+- D는 adversarial loss를 maximize하길 원하기 때문에 마이너스가 붙은 것이다.
+- G는 adversarial loss를 minimize하길 원하므로 마이너스가 붙지 않은 것이다.  
+
+## 5. Mask vector
+- 논문에서 사용된 dataset은 ficial attribute만 가지고 있는 CelebA와 facial expression만 가지고 있는 RaFD를 사용한다.
+- 이 둘은 서로 다른 도메인이기 때문에 저자는 mask vector , m 이라는 개념을 도입했다.
+- m은 one-hot vector로 나타내지고 두 dataset을 합칠때는 concate하면 된다.
