@@ -48,8 +48,19 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 #### 2-1. domain classification loss of real images used to optimize D
 ![image](https://user-images.githubusercontent.com/70633080/109123102-cccc4d00-778c-11eb-9134-d5f048c524af.png)
 - real image가 들어오면 real image에 대한 original domain값으로 분류되게 하는 loss이다.
-- D를 위해 사용되는 loss
+- D를 위해 사용되는 loss ( 얼마나 잘 분류했는가)
 
 #### 2-2. domain classification loss of fake images used to optimize G
 ![image](https://user-images.githubusercontent.com/70633080/109123339-10bf5200-778d-11eb-9285-a1f28e234344.png)
-- target domain으로 
+- 생성된 fake img(target domain으로 변환된 이미지)가 target domain으로 분류될수 있도록 LOSS를 최소화한다.
+- G를 위해 사용되는 loss ( 얼마나 잘 속였는가)
+
+### 3. Reconstruction Loss
+![image](https://user-images.githubusercontent.com/70633080/109124255-0c476900-778e-11eb-92f2-d7546d9aa5f5.png)
+- G가 생성한 fake image와 바뀐 target domain(origin label)을 다시 G의 input으로 넣는다.
+- fake image를 origin image의 형태로 다시 복원한 image가 출력됨.
+- 따라서 **target domain부분은 변화시키되 input image의 형태를 유지하게끔 복원하기 위해 cycle consistence loss**를 이용한다.
+
+### 4. Total loss
+![image](https://user-images.githubusercontent.com/70633080/109122231-a0640100-778b-11eb-9678-848403c2e89f.png)
+- sdf
