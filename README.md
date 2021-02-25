@@ -72,3 +72,17 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - 논문에서 사용된 dataset은 ficial attribute만 가지고 있는 CelebA와 facial expression만 가지고 있는 RaFD를 사용한다.
 - 이 둘은 서로 다른 도메인이기 때문에 저자는 mask vector , m 이라는 개념을 도입했다.
 - m은 one-hot vector로 나타내지고 두 dataset을 합칠때는 concate하면 된다.
+``` ~c = [c1,c2,...,cn,m]```
+- ci : i번째 dataset의 label들의 vector , ci는 binary attribute를 가진 binary vector 또는 categorical attribute를 가진 one-hot vector이다.
+- CelebA와 RaFD를 교차시킴으로써 D는 두 dataset에서 차이를 구분짓는 모든 feature들을 학습하게 된다.
+- G는 모든 label을 컨트롤하는 것을 학습하게 된다.
+
+## 6. 전체적인 구조
+![image](https://user-images.githubusercontent.com/70633080/109127529-e328d780-7791-11eb-9830-0901b0b10ca4.png)
+
+## 7. Result
+![image](https://user-images.githubusercontent.com/70633080/109127607-f5a31100-7791-11eb-8429-099c88090ba2.png)\
+![image](https://user-images.githubusercontent.com/70633080/109127658-0489c380-7792-11eb-9ad6-9a42c09e4a2e.png)
+- Celeb A와 RaFD를 128 * 128로 동일하게 맞춰준 후 모델에 입력한다.
+- Celeb A에서는 40개의 attribute 중 7개만 뽑아 사용했고 RaFD는 작은 dataset이기 때문에 모두 사용한다.
+- 
