@@ -22,4 +22,5 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - (b) G의 input으로 {input img, target domain}이 들어간다.
   - 여기서 target domain은 label(binary or one-hot vector)형태로 들어간다. 
   - output으로 fake이미지를 생성한다.
-- (c) G는 original domain label(원래 가지고있던 image의 one-hot vector)를 가지고 
+- (c) G는 original domain label(원래 가지고있던 image의 one-hot vector)를 가지고 fake image를 다시 origin image로 reconstruction하려한다. 
+  - 따라서 output은 reconstructed image이다. 
