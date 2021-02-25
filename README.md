@@ -17,5 +17,9 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 
 ## 3. Overview of StarGAN 
 ![image](https://user-images.githubusercontent.com/70633080/109119763-765d0f80-7788-11eb-8488-4bef923d50d9.png)
-- (a) D : x ->  
-
+- (a) D : x ->  {Dsrc(x), Dcls(x)} D는 real과 fake를 구분함과 동시에 real image일때 해당 domain으로 분류해내는 것을 학습한다. 
+  - 즉, D는 source와 domain labels에 대한 확률분포를 만든다.
+- (b) G의 input으로 {input img, target domain}이 들어간다.
+  - 여기서 target domain은 label(binary or one-hot vector)형태로 들어간다. 
+  - output으로 fake이미지를 생성한다.
+- (c) G는 original domain label(원래 가지고있던 image의 one-hot vector)를 가지고 
