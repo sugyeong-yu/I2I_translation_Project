@@ -63,4 +63,5 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 
 ### 4. Total loss
 ![image](https://user-images.githubusercontent.com/70633080/109122231-a0640100-778b-11eb-9678-848403c2e89f.png)
-- sdf
+- λcls, λrec : 하이퍼파라미터임. domain분류와 reconstruction loss들의 상대적인 중요도를 컨트롤함.
+- D는 adversarial loss를 maximize하길 원하기 때문에 
