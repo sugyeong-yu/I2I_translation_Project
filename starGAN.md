@@ -83,5 +83,6 @@ adversarial loss와 같고, 결국엔 이 loss를 최소화시켜야함
 
 ##### 2-2. domain classification loss of fake image used to optimize G
 
+![image](https://user-images.githubusercontent.com/72767245/109129142-a827a380-7793-11eb-82cf-046b9cc62e8d.png)
 
-
+Target 도메인으로 바뀌어 생성된 이미지가 target domain으로 분류될 수 있게 최소화시켜야 한다
