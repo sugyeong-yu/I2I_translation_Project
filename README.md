@@ -24,3 +24,9 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
   - output으로 fake이미지를 생성한다.
 - (c) G는 original domain label(원래 가지고있던 image의 one-hot vector)를 가지고 fake image를 다시 origin image로 reconstruction하려한다. 
   - 따라서 output은 reconstructed image이다. 
+- (d) D를 속이는 과정. G는 real과 구분 불가능하고 D에 의해 target domain으로 분류될 수 있는 이미지를 생성한다.
+
+- **한개의 Generator를 다른 용도로 2번 사용된다.**
+
+## 4. Loss
+
