@@ -75,7 +75,9 @@
 
 
 ##### 2-1. domain classification loss of real images used to optimize D
-![image](https://user-images.githubusercontent.com/72767245/109127571-ec19a900-7791-11eb-9ba1-62be86cef799.png)
+![image](https://user-images.githubusercontent.com/72767245/109127571-ec19a900-7791-11eb-9ba1-62be86cef799.png)  
+
+
 real image가 들어오면 real image 에 대한 original 도메인 값으로 분류되게 하는 loss 임
 adversarial loss와 같고, 결국엔 이 loss를 최소화시켜야함
 
