@@ -16,5 +16,6 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 ![image](https://user-images.githubusercontent.com/70633080/109119331-e15a1680-7787-11eb-9cf5-53c2dd6c4101.png) 
 
 ## 3. Overview of StarGAN 
-- 
+![image](https://user-images.githubusercontent.com/70633080/109119763-765d0f80-7788-11eb-8488-4bef923d50d9.png)
+- (a) D : x ->  
 
