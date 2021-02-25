@@ -86,7 +86,7 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - Celeb A와 RaFD를 128 * 128로 동일하게 맞춰준 후 모델에 입력한다.
 - Celeb A에서는 40개의 attribute 중 7개만 뽑아 사용했고 RaFD는 작은 dataset이기 때문에 모두 사용한다.
 - 여러개의 dataset을 이용한 StarGAN joint는 dataset을 모두 사용해 좋은 성능을 보인다.
-- multiple domains + multiple datasets 학습가능
+- multiple domains + multiple datasets 학습가능ㅇㅇㄴㄹ
 
 
 # 참고문헌
