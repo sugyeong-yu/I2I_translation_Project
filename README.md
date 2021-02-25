@@ -29,4 +29,17 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - **한개의 Generator를 다른 용도로 2번 사용된다.**
 
 ## 4. Loss
+- 전체 Loss
+![image](https://user-images.githubusercontent.com/70633080/109122147-82969c00-778b-11eb-84c7-6a4e00668b81.png)
 
+### 1. Adversarial Loss\
+![image](https://user-images.githubusercontent.com/70633080/109122231-a0640100-778b-11eb-9678-848403c2e89f.png)
+- G(x,c) : x와 target domain label을 가지고 G(x,c)라는 이미지를 생성한다. 
+- D는 real과 fake를 구분하려는 loss
+- D가 real로 분류할 경우 : 1에 가까운 값으로 출력된다. 
+- D가 fake로 분류할 경우 : 0에 가까운 값으로 출력된다.
+- real img인 x에 대해선 Dsrc(x)는 1을 가지도록, Dsrc(G(x,c))에서는 G가 real인거처럼 학습하므로 1을 가지도록 학습
+- 따라서 LOSS가 최소가 됨 (-log는 1에가까우면 0으로, 0에 가까우면 무한대로 발산)
+
+### 2. Domain Classification Loss
+- input img x와 target domain label c가 주어졌을 때, 
