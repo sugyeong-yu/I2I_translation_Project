@@ -133,6 +133,21 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 3. Style diversification
     - 다양한 style을 생성하게 하기위해 추가된 loss이다.
     - 여기서 s1,s2는 각각 다른 latent vector z에서 생성된 style vector이다.
+    - 이 loss는 최적화 지점이 없기 때문에 선형적으로 weight를 0으로 줄여가며 학습했다고 한다.
+
+4. Cycle consistency loss
+    - 위의 loss들만으로 생성된 이미지가 input image x에 대해 도메인이 해당하지 않는 속성들을 갖고있는지 확신할 수 없다.
+    - 따라서 이를 추가하였음
+    - s^은  Ey(x)로 input image x에 대해서 추출된 style vector이다.
+
+5. Full objective 
+![image](https://user-images.githubusercontent.com/70633080/109941809-dfa7ca00-7d16-11eb-9f1d-4a778143891c.png)
+    - 람다는 하이퍼파라미터이다. adversarial loss를 기준으로 각 loss의 중요도를 반영해 정해진다고 한다.
+    - style diversification에서 본것 처럼 weight를 줄여가는 식으로 loss가 구성되었음을 알 수 있다.
+
+## Result
+![image](https://user-images.githubusercontent.com/70633080/109941965-0bc34b00-7d17-11eb-8e74-9c8c2097a8df.png)\
+![image](https://user-images.githubusercontent.com/70633080/109942005-167de000-7d17-11eb-8a49-346d1da1e8fd.png)
 
 
 # 참고문헌
