@@ -102,9 +102,14 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 
 ## 3. FrameWork
 ![image](https://user-images.githubusercontent.com/70633080/109932836-0c0b1880-7d0e-11eb-9916-db3a25623aa6.png)
-- 
-
-# 참고문헌
-- <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
 - X를 이미지의 집합 그리고 Y를 가능한 도메인의 집합이라고 가정
 - X에 속하는 이미지 x와 Y에 속하는 도메인 y가 주어졌을때, StarGAN v2의 목표는 하나의 generator만으로 이미지 x를 도메인 y의 이미지로 변형하되, 다양한 스타일로 변형할 수 있도록 학습하는 것이다. 
+
+- (a) Generator : G의 역할은 input image가 들어오면 output으로 G(x,s)가 나온다.
+  - s는 style vector로 AdalN(Adaptive instance normalization)을 통해 주입된다.
+  - s는 도메인 y의 style을 대표하도록 mapping network F나 style encoder E에 의해 생성된다.
+ 
+- (b) Mapping network : random latent vector 
+# 참고문헌
+- <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
+
