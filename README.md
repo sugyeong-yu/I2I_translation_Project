@@ -108,8 +108,26 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - (a) Generator : G의 역할은 input image가 들어오면 output으로 G(x,s)가 나온다.
   - s는 style vector로 AdalN(Adaptive instance normalization)을 통해 주입된다.
   - s는 도메인 y의 style을 대표하도록 mapping network F나 style encoder E에 의해 생성된다.
-  - ㅇㄹㄴ
-- (b) Mapping network : random latent vector z 
+  
+- (b) Mapping network : random latent vector z와 domain y가 주어졌을때 Mapping network인 F는 style vector s=Fy(z)를 만든다.
+  - 즉, domain y를 대표하는 latent vector z를 style vector s로 mapping해준다. 
+  - F는 다중출력 MLP로 구성된다.
+
+- (c) Style Encoder : image x와 domain y가 주어지면 E는 image x에서 style information을 추출하는 역할을 한다. s=Ey(x)
+
+- (d) Discriminator : D는 다중출력 Discriminator이다. D의 각 branch는 이미지 x가 real인지 fake인지 이진분류할 수 있도록 학습한다.
+
+## 4. Training objectives
+![image](https://user-images.githubusercontent.com/70633080/109937884-bb49ee80-7d12-11eb-877d-9e205221c45a.png)
+1. Adversarial objective
+  - StarGAN에서 봤던것과 동일. 
+  - 특징은 latent vector z와 타깃도메인 ~y를 랜덤하게 샘플링해, target style vector ~s를 input으로 넣었다는 것이다.
+
+2. Style reconstruction
+  - dsfsdf
+
+
+
 # 참고문헌
 - <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
 
