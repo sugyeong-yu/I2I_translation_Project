@@ -120,11 +120,12 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 ## 4. Training objectives
 ![image](https://user-images.githubusercontent.com/70633080/109937884-bb49ee80-7d12-11eb-877d-9e205221c45a.png)
 1. Adversarial objective
-  - StarGAN에서 봤던것과 동일. 
-  - 특징은 latent vector z와 타깃도메인 ~y를 랜덤하게 샘플링해, target style vector ~s를 input으로 넣었다는 것이다.
+    - StarGAN에서 봤던것과 동일. 
+    - 특징은 latent vector z와 타깃도메인 ~y를 랜덤하게 샘플링해, target style vector ~s를 input으로 넣었다는 것이다.
 
 2. Style reconstruction
-  - dsfsdf
+    - style에 맞게 잘 변화시키기 위한 것이다.
+    - ㄴㅇㄹ
 
 
 
