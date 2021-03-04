@@ -145,7 +145,7 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
     - 람다는 하이퍼파라미터이다. adversarial loss를 기준으로 각 loss의 중요도를 반영해 정해진다고 한다.
     - style diversification에서 본것 처럼 weight를 줄여가는 식으로 loss가 구성되었음을 알 수 있다.
 
-## Result
+## 5. Result
 ![image](https://user-images.githubusercontent.com/70633080/109941965-0bc34b00-7d17-11eb-8e74-9c8c2097a8df.png)\
 ![image](https://user-images.githubusercontent.com/70633080/109942005-167de000-7d17-11eb-8a49-346d1da1e8fd.png)
 
