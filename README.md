@@ -131,7 +131,8 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
     - 즉, 얼마나 우리가 원하는 style에 가깝게 fake image가 생성되었는가를 판단해주는 loss라고 할 수 있다.
 
 3. Style diversification
-    - 
+    - 다양한 style을 생성하게 하기위해 추가된 loss이다.
+    - 여기서 s1,s2는 각각 다른 latent vector z에서 생성된 style vector이다.
 
 
 # 참고문헌
