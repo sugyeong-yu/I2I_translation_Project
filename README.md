@@ -89,6 +89,10 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - multiple domains + multiple datasets 학습가능ㅇㅇㄴㄹ
 
 # 2. starGAN v2
+## 1. starGAN v1 -> v2
+- starGAN v1은 각 domain에 대한 결정을 한번에 하나씩 직접해야한다. 
+- 
+
 
 # 참고문헌
 - <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
