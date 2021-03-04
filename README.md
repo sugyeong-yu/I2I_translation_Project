@@ -1,4 +1,4 @@
-# starGAN
+# I2I Translation Project
 
 
 ### 목록
