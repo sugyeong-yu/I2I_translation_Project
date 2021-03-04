@@ -1,3 +1,2 @@
 # starGAN
 starGAN
-ㄹ
