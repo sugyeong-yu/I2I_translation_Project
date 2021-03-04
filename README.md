@@ -125,8 +125,12 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 
 2. Style reconstruction
     - style에 맞게 잘 변화시키기 위한 것이다.
-    - ~ s = F ~ y(z), fake image를 만드는데 사용한 style code와 만들어진 fake image를 단일인코더 E에 넣어 얻은 style code를 비교하는 것이다.
+    - ~ s = F ~ y(z)
+    - fake image를 만드는데 사용한 style code와 만들어진 fake image를 단일인코더 E에 넣어 얻은 style code를 비교하는 것이다.
     - fake image에 우리가 원하는 스타일코드 ~ s가 많이 적용되었을 수록 인코더를 통과한 fake image ~ s랑 비슷해질 것이다.
+    - 즉, 얼마나 우리가 원하는 style에 가깝게 fake image가 생성되었는가를 판단해주는 loss라고 할 수 있다.
+
+3. Style diversification
     - 
 
 
