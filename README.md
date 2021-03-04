@@ -86,8 +86,70 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - Celeb A와 RaFD를 128 * 128로 동일하게 맞춰준 후 모델에 입력한다.
 - Celeb A에서는 40개의 attribute 중 7개만 뽑아 사용했고 RaFD는 작은 dataset이기 때문에 모두 사용한다.
 - 여러개의 dataset을 이용한 StarGAN joint는 dataset을 모두 사용해 좋은 성능을 보인다.
-- multiple domains + multiple datasets 학습가능
+- multiple domains + multiple datasets 학습가능ㅇㅇㄴㄹ
+
+# 2. starGAN v2
+## 1. starGAN v1 -> v2
+- starGAN
+  - starGAN v1은 각 domain에 대한 결정을 한번에 하나씩 직접해야한다.
+  - 데이터 분포에 대한 다양한 특성을 반영하지 못함
+- starGAN v2
+  - 어떤 domain의 image한개를 target domain의 여러 다양한 image로 변경할 수 있다.
+  - 특정 도메인에 대한 다양한 style들을 표현할 수 있다.
+## 2. key point
+- Mapping Network :  임의의 가우스 노이즈를 스타일 코드로 변환하는 것을 학습
+- Style Encoder : 주어진 소스 이미지에서 스타일 코드를 추출하는 것을 학습
+
+## 3. FrameWork
+![image](https://user-images.githubusercontent.com/70633080/109932836-0c0b1880-7d0e-11eb-9916-db3a25623aa6.png)
+- X를 이미지의 집합 그리고 Y를 가능한 도메인의 집합이라고 가정
+- X에 속하는 이미지 x와 Y에 속하는 도메인 y가 주어졌을때, StarGAN v2의 목표는 하나의 generator만으로 이미지 x를 도메인 y의 이미지로 변형하되, 다양한 스타일로 변형할 수 있도록 학습하는 것이다. 
+
+- (a) Generator : G의 역할은 input image가 들어오면 output으로 G(x,s)가 나온다.
+  - s는 style vector로 AdalN(Adaptive instance normalization)을 통해 주입된다.
+  - s는 도메인 y의 style을 대표하도록 mapping network F나 style encoder E에 의해 생성된다.
+  
+- (b) Mapping network : random latent vector z와 domain y가 주어졌을때 Mapping network인 F는 style vector s=Fy(z)를 만든다.
+  - 즉, domain y를 대표하는 latent vector z를 style vector s로 mapping해준다. 
+  - F는 다중출력 MLP로 구성된다.
+
+- (c) Style Encoder : image x와 domain y가 주어지면 E는 image x에서 style information을 추출하는 역할을 한다. s=Ey(x)
+
+- (d) Discriminator : D는 다중출력 Discriminator이다. D의 각 branch는 이미지 x가 real인지 fake인지 이진분류할 수 있도록 학습한다.
+
+## 4. Training objectives
+![image](https://user-images.githubusercontent.com/70633080/109937884-bb49ee80-7d12-11eb-877d-9e205221c45a.png)
+1. Adversarial objective
+    - StarGAN에서 봤던것과 동일. 
+    - 특징은 latent vector z와 타깃도메인 ~y를 랜덤하게 샘플링해, target style vector ~s를 input으로 넣었다는 것이다.
+
+2. Style reconstruction
+    - style에 맞게 잘 변화시키기 위한 것이다.
+    - ~ s = F ~ y(z)
+    - fake image를 만드는데 사용한 style code와 만들어진 fake image를 단일인코더 E에 넣어 얻은 style code를 비교하는 것이다.
+    - fake image에 우리가 원하는 스타일코드 ~ s가 많이 적용되었을 수록 인코더를 통과한 fake image ~ s랑 비슷해질 것이다.
+    - 즉, 얼마나 우리가 원하는 style에 가깝게 fake image가 생성되었는가를 판단해주는 loss라고 할 수 있다.
+
+3. Style diversification
+    - 다양한 style을 생성하게 하기위해 추가된 loss이다.
+    - 여기서 s1,s2는 각각 다른 latent vector z에서 생성된 style vector이다.
+    - 이 loss는 최적화 지점이 없기 때문에 선형적으로 weight를 0으로 줄여가며 학습했다고 한다.
+
+4. Cycle consistency loss
+    - 위의 loss들만으로 생성된 이미지가 input image x에 대해 도메인이 해당하지 않는 속성들을 갖고있는지 확신할 수 없다.
+    - 따라서 이를 추가하였음
+    - s^은  Ey(x)로 input image x에 대해서 추출된 style vector이다.
+
+5. Full objective 
+![image](https://user-images.githubusercontent.com/70633080/109941809-dfa7ca00-7d16-11eb-9f1d-4a778143891c.png)
+    - 람다는 하이퍼파라미터이다. adversarial loss를 기준으로 각 loss의 중요도를 반영해 정해진다고 한다.
+    - style diversification에서 본것 처럼 weight를 줄여가는 식으로 loss가 구성되었음을 알 수 있다.
+
+## 5. Result
+![image](https://user-images.githubusercontent.com/70633080/109941965-0bc34b00-7d17-11eb-8e74-9c8c2097a8df.png)\
+![image](https://user-images.githubusercontent.com/70633080/109942005-167de000-7d17-11eb-8a49-346d1da1e8fd.png)
 
 
 # 참고문헌
 - <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
+
