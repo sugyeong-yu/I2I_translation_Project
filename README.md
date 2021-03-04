@@ -90,10 +90,21 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 
 # 2. starGAN v2
 ## 1. starGAN v1 -> v2
-- starGAN v1은 각 domain에 대한 결정을 한번에 하나씩 직접해야한다. 
-- 
+- starGAN
+  - starGAN v1은 각 domain에 대한 결정을 한번에 하나씩 직접해야한다.
+  - 데이터 분포에 대한 다양한 특성을 반영하지 못함
+- starGAN v2
+  - 어떤 domain의 image한개를 target domain의 여러 다양한 image로 변경할 수 있다.
+  - 특정 도메인에 대한 다양한 style들을 표현할 수 있다.
+## 2. key point
+- Mapping Network :  임의의 가우스 노이즈를 스타일 코드로 변환하는 것을 학습
+- Style Encoder : 주어진 소스 이미지에서 스타일 코드를 추출하는 것을 학습
 
+## 3. FrameWork
+![image](https://user-images.githubusercontent.com/70633080/109932836-0c0b1880-7d0e-11eb-9916-db3a25623aa6.png)
+- 
 
 # 참고문헌
 - <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
-
+- X를 이미지의 집합 그리고 Y를 가능한 도메인의 집합이라고 가정
+- X에 속하는 이미지 x와 Y에 속하는 도메인 y가 주어졌을때, StarGAN v2의 목표는 하나의 generator만으로 이미지 x를 도메인 y의 이미지로 변형하되, 다양한 스타일로 변형할 수 있도록 학습하는 것이다. 
