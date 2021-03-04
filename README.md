@@ -108,8 +108,8 @@ starGAN의 개념과 특징, 구조에 대해 살펴본다.
 - (a) Generator : G의 역할은 input image가 들어오면 output으로 G(x,s)가 나온다.
   - s는 style vector로 AdalN(Adaptive instance normalization)을 통해 주입된다.
   - s는 도메인 y의 style을 대표하도록 mapping network F나 style encoder E에 의해 생성된다.
- 
-- (b) Mapping network : random latent vector 
+  - ㅇㄹㄴ
+- (b) Mapping network : random latent vector z 
 # 참고문헌
 - <https://velog.io/@tobigs-gm1/Multidomain-ImageTranslation>
 
