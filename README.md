@@ -1,5 +1,5 @@
 # I2I Translation Project
-![Generic badge](https://img.shields.io/badge/lastupdate-210402-red.svg)
+![Generic badge](https://img.shields.io/badge/lastupdate-210402-pink.svg)
 
 ### 목록
 
