@@ -1,10 +1,10 @@
 # I2I Translation Project
-![Generic badge](https://img.shields.io/badge/lastupdate-210402-pink.svg)
+![Generic badge](https://img.shields.io/badge/lastupdate(wj)-210402-skyblue.svg) ![Generic badge](https://img.shields.io/badge/lastupdate(sg)-210402-pink.svg)
 
 ### 목록
 
 ---
-
+sg
 #### starGAN: [arXiv](https://arxiv.org/pdf/1711.09020.pdf)
 #### starGANv2
 #### CycleGAN: [arXiv](https://arxiv.org/pdf/1703.10593.pdf)
