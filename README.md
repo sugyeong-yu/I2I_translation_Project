@@ -4,7 +4,7 @@
 ### 목록
 
 ---
-sg
+![image](https://user-images.githubusercontent.com/70633080/113829813-e5367b00-97c0-11eb-94a1-945f2794aa89.png)
 #### starGAN: [arXiv](https://arxiv.org/pdf/1711.09020.pdf)
 #### starGANv2
 #### CycleGAN: [arXiv](https://arxiv.org/pdf/1703.10593.pdf)
