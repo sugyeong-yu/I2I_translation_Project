@@ -18,7 +18,7 @@ sg
 |날짜|내용|비고|결과|
 |---|---|---|---|
 |21.03.30|StarGANv2 실행|https://github.com/clovaai/stargan-v2|🤦‍♀️실패🤦‍♀️|
-|21.04.15|starGAN ```model.py``` 공부|https://github.com/yunjey/stargan||
+|21.04.15|**starGAN** ```model.py``` 공부|https://github.com/yunjey/stargan||
 |21.04.08|StarGANv2 AdaIN & AdaIN 블럭(공부 및 코드 구현)|||
 |21.04.15|StarGANv2 Generator 코드구현|||
 |21.04.22|StarGANv2 MappingNetwork&StyleEncoder 코드구현|||
