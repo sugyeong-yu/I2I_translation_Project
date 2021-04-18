@@ -130,7 +130,10 @@ def forward(self, x, c):
   - ['Black_Hair', 'Blond_Hair', 'Brown_Hair', 'Male', 'Young']\
 ![image](https://user-images.githubusercontent.com/70633080/115145795-5a8e2f80-a08e-11eb-8d78-fe69d04bab5d.png)
 - c.view & c.repeat 
-  - c.size는 16,7,128,128 이 됨
+  - c.size는 16,7,128,128 이 됨\
 ![image](https://user-images.githubusercontent.com/70633080/115145826-8f9a8200-a08e-11eb-8f08-9e5bba29b93f.png)
 ![image](https://user-images.githubusercontent.com/70633080/115145837-9aedad80-a08e-11eb-9ce0-6a1af46e1294.png)
-- torch.cat()
+- torch.cat([x,c],dim=1)
+  - x.size() : [16,10,128,128]\
+![image](https://user-images.githubusercontent.com/70633080/115145890-f6b83680-a08e-11eb-8c0b-d4209b81c8b8.png)
+- 이후 self.main에 x를
