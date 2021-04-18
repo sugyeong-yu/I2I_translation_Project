@@ -136,4 +136,4 @@ def forward(self, x, c):
 - torch.cat([x,c],dim=1)
   - x.size() : [16,10,128,128]\
 ![image](https://user-images.githubusercontent.com/70633080/115145890-f6b83680-a08e-11eb-8c0b-d4209b81c8b8.png)
-- 이후 self.main에 x를
+- 이후 self.main에 x를 입력으로 넣어 호출한다. 
