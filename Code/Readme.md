@@ -129,3 +129,8 @@ def forward(self, x, c):
 - c : domain값들로 아래그림과 같은 형태를 가짐
   - ['Black_Hair', 'Blond_Hair', 'Brown_Hair', 'Male', 'Young']\
 ![image](https://user-images.githubusercontent.com/70633080/115145795-5a8e2f80-a08e-11eb-8d78-fe69d04bab5d.png)
+- c.view & c.repeat 
+  - c.size는 16,7,128,128 이 됨
+![image](https://user-images.githubusercontent.com/70633080/115145826-8f9a8200-a08e-11eb-8f08-9e5bba29b93f.png)
+![image](https://user-images.githubusercontent.com/70633080/115145837-9aedad80-a08e-11eb-9ce0-6a1af46e1294.png)
+- torch.cat()
