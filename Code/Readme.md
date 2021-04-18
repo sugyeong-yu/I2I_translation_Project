@@ -62,13 +62,70 @@ def forward(self, x):
 - forward()는 클래스객체명(forward의 매개변수) 형태로 호출하면 자동으로 forward()가 호출된다.
 
 ### Generator
+#### init()
 ```
 def __init__(self, conv_dim=64, c_dim=5, repeat_num=6):
         super(Generator, self).__init__()
 ```
 - conv_dim : 첫번째 Conv layer의 output dimention
 - c_dim : domain_label수 
-- repeat_num : Residual Block의 수 \
-![image](https://user-images.githubusercontent.com/70633080/115145414-5bbe5d00-a08c-11eb-9896-6338169848b0.png)
+- repeat_num : Residual Block의 수 
 ```
-
+layers = []
+        layers.append(nn.Conv2d(3+c_dim, conv_dim, kernel_size=7, stride=1, padding=3, bias=False))
+        layers.append(nn.InstanceNorm2d(conv_dim, affine=True, track_running_stats=True))
+        layers.append(nn.ReLU(inplace=True))
+# Down-sampling layers.
+      curr_dim = conv_dim
+      for i in range(2):
+          layers.append(nn.Conv2d(curr_dim, curr_dim*2, kernel_size=4, stride=2, padding=1, bias=False))
+          layers.append(nn.InstanceNorm2d(curr_dim*2, affine=True, track_running_stats=True))
+          layers.append(nn.ReLU(inplace=True))
+          curr_dim = curr_dim * 2
+```
+![image](https://user-images.githubusercontent.com/70633080/115145414-5bbe5d00-a08c-11eb-9896-6338169848b0.png)
+- **DownSampling** 
+  - conv2d()를 사용하며 dimention은 점점 커짐.
+  - 첫번째 Conv layer의 입력 dimention은 3+c_dim  > forward()에서 이유설명
+  - Instance Normalization과 ReLu를 거친다.
+  - 첫번째 downsampling layer가 끝났으면 conv_dim대신 curr_dim을 사용
+  - 두번째, 세번째 downsampling layer를 거친다. -> output dimention은 input dimention의 2배가 된다.
+```
+for i in range(repeat_num):
+            layers.append(ResidualBlock(dim_in=curr_dim, dim_out=curr_dim))
+```
+- **Bottleneck 구조**
+  - Residual Block을 repeat_num만큼 만들어 layers에 append
+  - dim_in과 dim_out이 같다. (curr_dim > 256)
+  - 논문에서는 6개의 block이 사용됨.
+```
+# Up-sampling layers.
+for i in range(2):
+    layers.append(nn.ConvTranspose2d(curr_dim, curr_dim//2, kernel_size=4, stride=2, padding=1, bias=False))
+    layers.append(nn.InstanceNorm2d(curr_dim//2, affine=True, track_running_stats=True))
+    layers.append(nn.ReLU(inplace=True))
+    curr_dim = curr_dim // 2
+layers.append(nn.Conv2d(curr_dim, 3, kernel_size=7, stride=1, padding=3, bias=False))
+layers.append(nn.Tanh())
+```
+- **Upsampling**
+  - Deconvolution을 위해 ConvTranspose2d()를 사용 , dimention이 작아진다.
+  - Deconv,IN,ReLU 과정을 2  번 반복한다.
+  - for 문 탈출 후 Conv와 Tanh를 거친다.
+```
+self.main = nn.Sequential(*layers)
+```
+- layer들을 sequential로 묶는다.
+#### forward()
+```
+def forward(self, x, c):
+    c = c.view(c.size(0), c.size(1), 1, 1)
+    c = c.repeat(1, 1, x.size(2), x.size(3))
+    x = torch.cat([x, c], dim=1)
+    return self.main(x)
+```
+- forward 매개변수에 real image x와 target domain c가 들어옴. (solver.py에서 전달)
+- img_size : 128 * 128 * 3 이 16개 (CelebA 기준)
+- c : domain값들로 아래그림과 같은 형태를 가짐
+  - ['Black_Hair', 'Blond_Hair', 'Brown_Hair', 'Male', 'Young']\
+![image](https://user-images.githubusercontent.com/70633080/115145795-5a8e2f80-a08e-11eb-8d78-fe69d04bab5d.png)
