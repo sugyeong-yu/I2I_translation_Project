@@ -137,3 +137,9 @@ def forward(self, x, c):
   - x.size() : [16,10,128,128]\
 ![image](https://user-images.githubusercontent.com/70633080/115145890-f6b83680-a08e-11eb-8c0b-d4209b81c8b8.png)
 - 이후 self.main에 x를 입력으로 넣어 호출한다. 
+- Generator의 첫번째 layer입력 dimention이 3+c_dim인 이유 : 초기 x의 dimention은 3이지만 torch.cat과정으로인해 3+c_dim이 되기 때문.
+- self.main(x)에서 return되는 image는 초기 x와 같은 size [16,3,128,128]
+  - 논문에서의 Generator의 마지막 layer의 shape과 동일하다.
+
+### Discriminaor
+#### init()
