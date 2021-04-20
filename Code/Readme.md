@@ -142,4 +142,59 @@ def forward(self, x, c):
   - 논문에서의 Generator의 마지막 layer의 shape과 동일하다.
 
 ### Discriminaor
+- 논문에서의 Discriminaor\
+![image](https://user-images.githubusercontent.com/70633080/115385663-58a1a900-a213-11eb-8241-1d2e7668012f.png)\
+![image](https://user-images.githubusercontent.com/70633080/115385683-5f302080-a213-11eb-98fc-0ebdee714c81.png)
 #### init()
+```
+ def __init__(self, image_size=128, conv_dim=64, c_dim=5, repeat_num=6):
+        super(Discriminator, self).__init__()
+        layers = []
+        layers.append(nn.Conv2d(3, conv_dim, kernel_size=4, stride=2, padding=1))
+        layers.append(nn.LeakyReLU(0.01))
+```
+- Discriminator에는 입력으로 평범한 RGB이미지가 들어옴
+  - 따라서 input dimention이 3
+- 입력으로 들어온 image는 Conv layer를 먼저 거친다.
+```
+curr_dim = conv_dim
+        for i in range(1, repeat_num):
+            layers.append(nn.Conv2d(curr_dim, curr_dim*2, kernel_size=4, stride=2, padding=1))
+            layers.append(nn.LeakyReLU(0.01))
+            curr_dim = curr_dim * 2
+```
+- 이는 Hidden layer부분 이다.
+- repeat num이 defalut로 6으로 설정되어 있으므로 5번 반복한다. (1~5)
+- dimention이 layer를 진행할 수록 2배가 된다.
+```
+kernel_size = int(image_size / np.power(2, repeat_num))
+self.main = nn.Sequential(*layers)
+self.conv1 = nn.Conv2d(curr_dim, 1, kernel_size=3, stride=1, padding=1, bias=False)
+self.conv2 = nn.Conv2d(curr_dim, c_dim, kernel_size=kernel_size, bias=False)
+```
+- Output layer부분이다.
+  - D_src : real/fake -> conv1
+  - D_cls : 입력이미지의 Domain label  -> conv2
+- Discriminator는 입력 img의 real/fake 를 구분한다.
+- kernel_size = (img한변길이/2^repeat_num) 을 두번째 Conv layer에 kernel size로 할당한다. (h/64)
+- conv1 : real/fake여부를 출력해야하므로 output dimention=1
+- conv2 : Domain의 label을 출력해야하므로 output dimention=c_dim
+
+#### forward()
+```
+ def forward(self, x):
+        h = self.main(x)
+        out_src = self.conv1(h)
+        out_cls = self.conv2(h)
+        return out_src, out_cls.view(out_cls.size(0), out_cls.size(1))
+```
+- forward(self,x) 
+  - x : 진짜인지 가짜인지 판별할 img
+- self.main(x) : Hidden layer까지 모두 거친 output이 return된다.
+- self.conv1과 self.conv2에 인자를 전달해 각 결과를 return한다. 
+- out_cls 의 size를 조정해 out_src와 함께 return된다.
+
+## solver.py
+- Solver class는 nn.Module을 상속받지않는다. 
+- Solver 객체 호출시 celeba_loader, rafd_loader, config를 넘겨준다.
+  - 즉 각 DB에 대한 dataloader와 파라미터 설정값인 config를 넘겨주는 것
