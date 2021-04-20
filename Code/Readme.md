@@ -195,6 +195,20 @@ self.conv2 = nn.Conv2d(curr_dim, c_dim, kernel_size=kernel_size, bias=False)
 - out_cls 의 size를 조정해 out_src와 함께 return된다.
 
 ## solver.py
+### init()
+```
+class Solver(object):
+    """Solver for training and testing StarGAN."""
+
+    def __init__(self, celeba_loader, rafd_loader, config):
+        """Initialize configurations."""
+
+        # Data loader.
+        self.celeba_loader = celeba_loader
+        self.rafd_loader = rafd_loader
+```
 - Solver class는 nn.Module을 상속받지않는다. 
 - Solver 객체 호출시 celeba_loader, rafd_loader, config를 넘겨준다.
   - 즉 각 DB에 대한 dataloader와 파라미터 설정값인 config를 넘겨주는 것
+- line 23~65 : config를 넘겨주는 과정
+### build_model
