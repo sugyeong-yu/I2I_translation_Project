@@ -299,7 +299,7 @@ def denorm(self, x):
         return out.clamp_(0, 1)
 ```
 - out의 모든원소를 0,1 범위로 만들어 반환
-###
+### gradient_panalty()
 ```
 def gradient_penalty(self, y, x):
         """Compute gradient penalty: (L2_norm(dy/dx) - 1)**2."""
@@ -318,3 +318,73 @@ def gradient_penalty(self, y, x):
 ![image](https://user-images.githubusercontent.com/70633080/115658658-278cba00-a374-11eb-8f7d-332b53c5d3b4.png)
 - 람다gp : gradiemt panalty이다.
 - l2 norm은 각 원소를 제곱해 모두 더한것에 루트를 씌워 구한다.
+### create_labels() & label2onehot()
+```
+def label2onehot(self, labels, dim):
+        """Convert label indices to one-hot vectors."""
+        batch_size = labels.size(0)
+        out = torch.zeros(batch_size, dim)
+        out[np.arange(batch_size), labels.long()] = 1
+        return out
+```
+```
+def create_labels(self, c_org, c_dim=5, dataset='CelebA', selected_attrs=None):
+      """Generate target domain labels for debugging and testing."""
+      # Get hair color indices.
+      if dataset == 'CelebA':
+          hair_color_indices = []
+          for i, attr_name in enumerate(selected_attrs):
+              if attr_name in ['Black_Hair', 'Blond_Hair', 'Brown_Hair', 'Gray_Hair']:
+                  hair_color_indices.append(i)
+
+      c_trg_list = []
+      for i in range(c_dim):
+          if dataset == 'CelebA':
+              c_trg = c_org.clone()
+              if i in hair_color_indices:  # Set one hair color to 1 and the rest to 0.
+                  c_trg[:, i] = 1
+                  for j in hair_color_indices:
+                      if j != i:
+                          c_trg[:, j] = 0
+              else:
+                  c_trg[:, i] = (c_trg[:, i] == 0)  # Reverse attribute value.
+          elif dataset == 'RaFD':
+              c_trg = self.label2onehot(torch.ones(c_org.size(0))*i, c_dim)
+
+          c_trg_list.append(c_trg.to(self.device))
+      return c_trg_list
+```
+- create_labels() : 모든 타겟의 도메인 레이블을 생성하는 함수.
+- c_org : 한 batch를 가져와을때 batch_size개의 이미지들의 실제 도메인레이블을 담는 tensor
+- c_org.size(0) : batch_size와 같다.
+- for 문 
+  - label2onehot() 호출
+  - torch.ones(c_org.size(0)) : 크기가 16이며 모든 값이 1인 tensor
+  - torch.ones(c_org.size(0)) * i : 크기가 16이며 값이 i인 tensor를 생성 
+  - label2onehot()에 생성된 tensor와 특성 수 c_dim을 넘겨준다.
+- label2onehot() 
+  - label : 크기가 batch_size이고 값이 i인 tensor를 넘겨받는다.
+  - 크기가 batch_size x dim(c_dim)이고 값이 모두 0인 tensor를 만들어 out에 할당.
+  - out[np.arange(batch_size),labels.long()]=1 :모두 값이 0이였던 tensor의 [?,i] 번쨰 값을 1로 변경\
+  ![image](https://user-images.githubusercontent.com/70633080/115660802-8273e080-a377-11eb-833a-d811e9f785cb.png)
+  - 이 tensor를 out하여 create_labels()에서 c_trg에 저장. 
+- 이렇게 최종적으로 c_trg_list에 원핫인코딩 된 라벨정보들이 출력됨
+- 각 이미지마다 변환할 모든 타겟 도메인을 create_labels()를 통해 생성하는것
+### classification_loss()
+- classification_loss()는 Domain classification loss를 구하는 함수이다.
+```
+ def classification_loss(self, logit, target, dataset='CelebA'):
+        """Compute binary or softmax cross entropy loss."""
+        if dataset == 'CelebA':
+            return F.binary_cross_entropy_with_logits(logit, target, size_average=False) / logit.size(0)
+        elif dataset == 'RaFD':
+            return F.cross_entropy(logit, target)
+```
+- 파라미터 logit에는 Discriminator의 출력값중 하나인 Dcls 즉, Discriminator의 input img의 domain classification값이 들어온다.
+- 출력값 target에는 원본 domain의 label 또는 랜덤으로 생성된 타겟 도메인의 레이블이 들어온다.
+- logit에 원본이미지에 대한 domain classification값 (예측값)이 들어오면 target에는 원본 도메인 label(정답)이 들어온다.
+- logit에 합성이미지에 대한 domain classification값 (예측값)이 들어오면 target에는 합성이미지의 도메임 label(정담)이 들어온다.
+- 따라서 Discriminator를 통해 예측한 입력이미지의 domain과 실제 domain간의 loss를 구하는것.
+- cross_entropy()를 사용
+- 원본 이미지에 대한 classification loss는 Discriminator를 최적화하기위함.
+- 합성 이미지에 대한 classification loss는 Generator를 최적화하기위함.
