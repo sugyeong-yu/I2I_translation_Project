@@ -211,4 +211,110 @@ class Solver(object):
 - Solver 객체 호출시 celeba_loader, rafd_loader, config를 넘겨준다.
   - 즉 각 DB에 대한 dataloader와 파라미터 설정값인 config를 넘겨주는 것
 - line 23~65 : config를 넘겨주는 과정
-### build_model
+### build_model()
+- build_model()은 Generator와 Discriminator를 만든다.
+```
+if self.dataset in ['CelebA', 'RaFD']:
+            self.G = Generator(self.g_conv_dim, self.c_dim, self.g_repeat_num)
+            self.D = Discriminator(self.image_size, self.d_conv_dim, self.c_dim, self.d_repeat_num)
+elif self.dataset in ['Both']:
+            self.G = Generator(self.g_conv_dim, self.c_dim+self.c2_dim+2, self.g_repeat_num)   # 2 for mask vector.
+            self.D = Discriminator(self.image_size, self.d_conv_dim, self.c_dim+self.c2_dim, self.d_repeat_num)
+```
+- self.G, self.D에 생성자와 판별자를 할당.
+```
+self.g_optimizer = torch.optim.Adam(self.G.parameters(), self.g_lr, [self.beta1, self.beta2])
+self.d_optimizer = torch.optim.Adam(self.D.parameters(), self.d_lr, [self.beta1, self.beta2])
+self.G.to(self.device)
+self.D.to(self.device)
+```
+- StarGan에서의 모든 모델은 학습과정에서 Adam optimizer를 사용한다.
+- 필요한 파라미터들은 main.py의 parsing과정에서 불러온다.
+- 모델.to(device) : 사용중인 장치에 최적화된 형태로 모델을 변환하는 작업
+### print_network()
+```
+self.print_network(self.G, 'G')
+self.print_network(self.D, 'D')
+def print_network(self, model, name):
+      """Print out the network information."""
+      num_params = 0
+      for p in model.parameters():
+          num_params += p.numel()
+      print(model)
+      print(name)
+      print("The number of parameters: {}".format(num_params))
+```
+- print_network()는 인자로 모델과 모델의 이름을 전달받음
+- 모델의 네트워크 정보를 출력하는 함수.
+- numel(): 파라미터의 원소 수를 구함
+- num_params : numel()로 구한 원소수를 반복하며 더함.
+
+### restore_model()
+```
+def restore_model(self, resume_iters):
+        """Restore the trained generator and discriminator."""
+        print('Loading the trained models from step {}...'.format(resume_iters))
+        G_path = os.path.join(self.model_save_dir, '{}-G.ckpt'.format(resume_iters))
+        D_path = os.path.join(self.model_save_dir, '{}-D.ckpt'.format(resume_iters))
+        self.G.load_state_dict(torch.load(G_path, map_location=lambda storage, loc: storage))
+        self.D.load_state_dict(torch.load(D_path, map_location=lambda storage, loc: storage))
+```
+- restore_model()은 이전에 학습해 저장된 모델을 불러오는 역할
+- 정해진 iteration('num_iters')만큼 학습이 완료되지 못한 경우 'resume_iters'인자에 학습을 이어할 수 있는 iteration수를 지정해주면 해당 iteration부터 학습을 이어할 수 있다.
+- 이때, 그 iteration에 해당하는 저장된 모델이 있어야한다. 
+- resume_iters : main.py에서 parsing > default가 None
+- load_state_dict : 학습된 G와 D모델에서 state_dict(학습된 가중치)를 불러와 각각 self.G와 D에 저장한다. 
+### build_tensorboard()
+```
+def build_tensorboard(self):
+        """Build a tensorboard logger."""
+        from logger import Logger
+        self.logger = Logger(self.log_dir)
+```
+- logger.py에 정의된 Logger class 객체를 생성한다.
+- logger.py는 뒤에서 설명
+### update_lr()
+```
+def update_lr(self, g_lr, d_lr):
+        """Decay learning rates of the generator and discriminator."""
+        for param_group in self.g_optimizer.param_groups:
+            param_group['lr'] = g_lr
+        for param_group in self.d_optimizer.param_groups:
+            param_group['lr'] = d_lr
+```
+- g_optimizer와 d_optimizer에서의 lr을 업데이트하는 함수
+### reset_grad()
+```
+def reset_grad(self):
+        """Reset the gradient buffers."""
+        self.g_optimizer.zero_grad()
+        self.d_optimizer.zero_grad()
+```
+- g_optimizer와 d_optimizer의 가중치를 0으로 리셋
+### denorm()
+```
+def denorm(self, x):
+        """Convert the range from [-1, 1] to [0, 1]."""
+        out = (x + 1) / 2
+        return out.clamp_(0, 1)
+```
+- out의 모든원소를 0,1 범위로 만들어 반환
+###
+```
+def gradient_penalty(self, y, x):
+        """Compute gradient penalty: (L2_norm(dy/dx) - 1)**2."""
+        weight = torch.ones(y.size()).to(self.device)
+        dydx = torch.autograd.grad(outputs=y,
+                                   inputs=x,
+                                   grad_outputs=weight,
+                                   retain_graph=True,
+                                   create_graph=True,
+                                   only_inputs=True)[0]
+
+        dydx = dydx.view(dydx.size(0), -1)
+        dydx_l2norm = torch.sqrt(torch.sum(dydx**2, dim=1))
+        return torch.mean((dydx_l2norm-1)**2)
+```
+![image](https://user-images.githubusercontent.com/70633080/115658658-278cba00-a374-11eb-8f7d-332b53c5d3b4.png)
+- 람다gp : gradiemt panalty이다.
+- l2 norm은 각 원소를 제곱해 모두 더한것에 루트를 씌워 구한다.
