@@ -22,3 +22,9 @@
 |21.04.15|StarGANv2 Generator 코드구현|||
 |21.04.22|StarGANv2 MappingNetwork&StyleEncoder 코드구현|||
 |21.04.29|StarGANv2 Discriminator 코드구현|||
+
+
+### Reference
+- colab 실습 <https://github.com/ndb796/Deep-Learning-Paper-Review-and-Practice/blob/master/code_practices/StarGAN_Tutorial.ipynb>
+- code 설명 <https://beausty23.tistory.com/120?category=348545>
+- code 제공 <https://github.com/yunjey/stargan>
