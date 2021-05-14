@@ -390,3 +390,76 @@ def create_labels(self, c_org, c_dim=5, dataset='CelebA', selected_attrs=None):
 - cross_entropy()를 사용
 - 원본 이미지에 대한 classification loss는 Discriminator를 최적화하기위함.
 - 합성 이미지에 대한 classification loss는 Generator를 최적화하기위함.
+
+### train()
+- 이는 main.py에서 호출되어 사용됨 (학습 시 호출)
+- 단일 데이터셋 훈련 함수
+```
+def train(self):
+  if self.dataset=='CelebA':
+    data_loader=self.celeba_loader
+  elif self.dataset=='RaFD':
+    data_loader=self.radf_loader
+  data_iter=iter(data_loader)
+  x_fixed,c_org=next(data_iter)
+  x_fixed=x_fixed.to(self.device)
+  c_fixed_list=self.create_labels(c_org,self.c_dim,self.dataset,self.selected_attrs)
+```
+- iter() : data_loader에 대한 iterator를 반환해 data_iter에 할당
+- next() : data_loader에 대한 iterator에서 값을 하나씩 꺼냄 (순차적)
+- x_fixed : batch_size개의 image가 담긴 tensor (16,3,128,128)
+- c_org : 각 이미지의 도메인 레이블이 담긴 tensor (16)
+- c_fixed_list : create_labels()를 통해 batch_size개의 이미지에 대해 모든 가능한 target domain을 생성해 할당.
+```
+  start_iters=0
+  if self.resume_iters:
+    start_iters=self.resume_iters
+    self.restore_model(self.resume_iters)
+   
+   # Start training 
+   print('Start training...')
+   start_time=time.time()
+```
+- resume_iters : default = None , 이전까지 수행했던 iteration에 이어서 학습을 시작할 수 있다.
+- resume_iters를 start_iters에 할당해 해당 iteration부터 시작.
+- restore_model()을 이용해 resume_iters에 해당하는 저장된 모델을 복원한다.
+```
+  for i in range(start_iters,self.num_iters):
+    # ================================================#
+    #           1. process input data (전처리단계)
+    # ================================================#
+```
+- i는 start_iters부터 num_iters-1까지 반복
+- 먼저 데이터 전처리를 시작한다.
+``` 
+      try:
+        x_real,label_org= next(data_iter)
+      except:
+        data_iters=iter(data_loader)
+        x_real,label_org=next(data_loader)
+```
+- data_loader에 대한 iterator로부터 값을 하나씩 꺼내 x_real과 label_org에 저장한다.  (data_loader 구조는 data_loader.py 에서 확인)
+- x_real : 한 batch에 대한 tensor
+- label_org : 한 batch내 각 이미지의 domain label을 담은 tensor
+```
+      # generate target domain labels randomly
+      rand_idx=torch.randperm(label_org.size(0))
+      label_trg=label_org[rand_idx]
+```
+- label_org.size(0) : batch size, 즉 만들어야하는 레이블 수
+- randperm : 0~batchsize-1의 값을 무작위의 순서로 중복되지 않는 배열을 반환
+- label_trg : 무작위로 타겟 도메인 생성.
+```
+       if self.dataset == 'CelebA':
+           c_org = label_org.clone()
+           c_trg = label_trg.clone()
+       elif self.dataset == 'RaFD':
+           c_org = self.label2onehot(label_org, self.c_dim)
+           c_trg = self.label2onehot(label_trg, self.c_dim)
+```
+- RaFD를 데이터로 사용할 경우 label2onehot()에 label_org 또는 label_trg를 넘겨줘 각 도메인 레이블에 대한 one-hot-vector가 만들어진다.
+```
+    # ================================================#
+    #      2. Train the Discriminator (판별자 학습단계)
+    # ================================================#
+    
