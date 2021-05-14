@@ -1,5 +1,7 @@
 # code discription
 
+- [Solver.py](https://github.com/sugyeong-yu/I2I_translation_Project/blob/su_g/Code/code_discription.md#solverpy)
+
 ## main.py
 - train 수행시 main.py실행
 - parameter config 
