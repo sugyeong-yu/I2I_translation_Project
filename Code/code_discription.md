@@ -462,4 +462,119 @@ def train(self):
     # ================================================#
     #      2. Train the Discriminator (판별자 학습단계)
     # ================================================#
-    
+    # Compute loss with real images.
+    out_src, out_cls = self.D(x_real)
+    d_loss_real = - torch.mean(out_src)
+    d_loss_cls = self.classification_loss(out_cls, label_org, self.dataset)
+
+    # Compute loss with fake images.
+    x_fake = self.G(x_real, c_trg)
+    out_src, out_cls = self.D(x_fake.detach())
+    d_loss_fake = torch.mean(out_src)
+
+    # Compute loss for gradient penalty.
+    alpha = torch.rand(x_real.size(0), 1, 1, 1).to(self.device)
+    x_hat = (alpha * x_real.data + (1 - alpha) * x_fake.data).requires_grad_(True)
+    out_src, _ = self.D(x_hat)
+    d_loss_gp = self.gradient_penalty(out_src, x_hat)
+
+    # Backward and optimize.
+    d_loss = d_loss_real + d_loss_fake + self.lambda_cls * d_loss_cls + self.lambda_gp * d_loss_gp
+    self.reset_grad()
+    d_loss.backward()
+    self.d_optimizer.step()
+
+    # Logging.
+    loss = {}
+    loss['D/loss_real'] = d_loss_real.item()
+    loss['D/loss_fake'] = d_loss_fake.item()
+    loss['D/loss_cls'] = d_loss_cls.item()
+    loss['D/loss_gp'] = d_loss_gp.item()
+```
+- D에 real img를 넣어 나온 output을 가지고 loss를 계산
+- G에 real img와 target domain을 넣고 나온 fake img를 가지고  loss계산
+- loss function은 논문의 수식을 보고 만듬.
+- loss.backward()로 미분값을 구하고
+- optimizer.step()으로 가중치 갱신 
+- 이는 파이토치 방식이다. 케라스는 model.compile(loss, optimizer) 해주면 알아서 컴파일됨
+
+```
+    # ================================================#
+    #      3. Train the Generator (판별자 학습단계)
+    # ================================================#
+    if (i+1) % self.n_critic == 0:
+      # Original-to-target domain.
+      x_fake = self.G(x_real, c_trg)
+      out_src, out_cls = self.D(x_fake)
+      g_loss_fake = - torch.mean(out_src)
+      g_loss_cls = self.classification_loss(out_cls, label_trg, self.dataset)
+
+      # Target-to-original domain.
+      x_reconst = self.G(x_fake, c_org)
+      g_loss_rec = torch.mean(torch.abs(x_real - x_reconst))
+
+      # Backward and optimize.
+      g_loss = g_loss_fake + self.lambda_rec * g_loss_rec + self.lambda_cls * g_loss_cls
+      self.reset_grad()
+      g_loss.backward()
+      self.g_optimizer.step()
+
+      # Logging.
+      loss['G/loss_fake'] = g_loss_fake.item()
+      loss['G/loss_rec'] = g_loss_rec.item()
+      loss['G/loss_cls'] = g_loss_cls.item()
+```
+- n_critic : Discriminator가 몇번 업데이트 될때마다 Generator를 1번 업데이트 할것인지를 나타내는 값.
+- Discriminator의 학습횟수를 나타내는 i+1에 대해 n_critic번의 주기마다 Generator를 학습한다.
+- 다음으로 논문에 있는 G loss식을 통해서 loss함수를 짠다.
+- x_reconst : G를 통해 생성된 가짜이미지(x_fake)와 원본이미지의 도메인(c_org)를 G의 입력으로하여 생성된 이미지를 저장.
+- 다음으로 reconstruction loss를 구해 g_loss_rec에 저장
+- L_adv식에서 loss_real에 해당하는 E_x와 gradient penalty 항이 빠짐 -> G에서는 loss_real을 계산하지 않기때문 (원본이미지에대한 로스는 필요업슴)
+- g_loss에 대한 backward 후 optimizer.step을 통해서 가중치 갱신
+```
+      # =================================================================================== #
+      #                                 4. Miscellaneous                                    #
+      # =================================================================================== #
+
+      # Print out training information.
+      if (i+1) % self.log_step == 0:
+          et = time.time() - start_time
+          et = str(datetime.timedelta(seconds=et))[:-7]
+          log = "Elapsed [{}], Iteration [{}/{}]".format(et, i+1, self.num_iters)
+          for tag, value in loss.items():
+              log += ", {}: {:.4f}".format(tag, value)
+          print(log)
+
+          if self.use_tensorboard:
+              for tag, value in loss.items():
+                  self.logger.scalar_summary(tag, value, i+1)
+
+      # Translate fixed images for debugging.
+      if (i+1) % self.sample_step == 0:
+          with torch.no_grad():
+              x_fake_list = [x_fixed]
+              for c_fixed in c_fixed_list:
+                  x_fake_list.append(self.G(x_fixed, c_fixed))
+              x_concat = torch.cat(x_fake_list, dim=3)
+              sample_path = os.path.join(self.sample_dir, '{}-images.jpg'.format(i+1))
+              save_image(self.denorm(x_concat.data.cpu()), sample_path, nrow=1, padding=0)
+              print('Saved real and fake images into {}...'.format(sample_path))
+
+      # Save model checkpoints.
+      if (i+1) % self.model_save_step == 0:
+          G_path = os.path.join(self.model_save_dir, '{}-G.ckpt'.format(i+1))
+          D_path = os.path.join(self.model_save_dir, '{}-D.ckpt'.format(i+1))
+          torch.save(self.G.state_dict(), G_path)
+          torch.save(self.D.state_dict(), D_path)
+          print('Saved model checkpoints into {}...'.format(self.model_save_dir))
+
+      # Decay learning rates.
+      if (i+1) % self.lr_update_step == 0 and (i+1) > (self.num_iters - self.num_iters_decay):
+          g_lr -= (self.g_lr / float(self.num_iters_decay))
+          d_lr -= (self.d_lr / float(self.num_iters_decay))
+          self.update_lr(g_lr, d_lr)
+          print ('Decayed learning rates, g_lr: {}, d_lr: {}.'.format(g_lr, d_lr)
+```
+- Miscellaneous 는 학습정보 출력, 샘플이미지저장, 학습모델저장, lr감소를 수행한다.
+
+### test()
