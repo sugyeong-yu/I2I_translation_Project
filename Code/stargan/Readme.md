@@ -7,6 +7,8 @@
   - [Solver.py]()
   - [Data_loader.py]()
   - [Main.py]()
-  - 
+  - [Logger.py]()
+  - [Model.py]()
+  - [google colab_practice]()
 - [code 설명](https://github.com/sugyeong-yu/I2I_translation_Project/blob/su_g/Code/stargan/code_discription.md)
 - [Dataset 설명](https://github.com/sugyeong-yu/I2I_translation_Project/blob/su_g/Code/stargan/Dataset_discription.md)
