@@ -25,9 +25,9 @@
 
 
 ### Reference
-- colab 실습 <https://github.com/ndb796/Deep-Learning-Paper-Review-and-Practice/blob/master/code_practices/StarGAN_Tutorial.ipynb>
-- code 설명 <https://beausty23.tistory.com/120?category=348545>
-- code 제공 <https://github.com/yunjey/stargan>
 
+- Model code 설명 <https://beausty23.tistory.com/120?category=348545>
+- Model code 제공 <https://github.com/yunjey/stargan>
+- I2I colab 실습 <https://github.com/ndb796/Deep-Learning-Paper-Review-and-Practice/blob/master/code_practices/StarGAN_Tutorial.ipynb>
 - stylegan이용해서 얼굴 디즈니화 시키기 실습<https://colab.research.google.com/drive/1s2XPNMwf6HDhrJ1FMwlW1jl-eQ2-_tlk?usp=sharing#scrollTo=cwVXBFaSuoIU>
   - google drive id = 1PnvIPYY3zm_qs-D4XugVT8-FJnQNzP53
