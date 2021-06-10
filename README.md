@@ -25,7 +25,7 @@
 
 
 ### Reference
-
+- stargan 논문 <https://arxiv.org/pdf/1711.09020.pdf>
 - Model code 설명 <https://beausty23.tistory.com/120?category=348545>
 - Model code 제공 <https://github.com/yunjey/stargan>
 - I2I colab 실습 <https://github.com/ndb796/Deep-Learning-Paper-Review-and-Practice/blob/master/code_practices/StarGAN_Tutorial.ipynb>
