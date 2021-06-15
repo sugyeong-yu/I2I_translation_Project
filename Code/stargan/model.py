@@ -3,8 +3,24 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
+class Residual_block(nn.Module):
+    def __init__(self,in_dim,out_dim):
+        super(Residual_block,self).__init__()
+
+        self.main=nn.Sequential(
+            nn.Conv2d(in_dim, out_dim, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.InstanceNorm2d(out_dim, affine=True, track_running_stats=True),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(out_dim, out_dim, kernel_size=3, stride=1, padding=1, bias=False),
+            nn.InstanceNorm2d(out_dim, affine=True, track_running_stats=True))
+
+    def forward(self,x):
+        return x+self.main(x)
+
+
+
 class Generator(nn.Module):
-    def __init__(self, conv_dim=64, c_dim=5, repeat_num):
+    def __init__(self, conv_dim=64, c_dim=5, repeat_num=6):
         super(Generator,self).__init__()
 
         self.conv1 = nn.Conv2d(3+c_dim,conv_dim,kernel_size=7,stride=1,padding=3)
@@ -21,7 +37,10 @@ class Generator(nn.Module):
                                           self.conv2,self.InsNorm2,self.activation,
                                           self.conv3,self.InsNorm3,self.activation)
 
-        self.bottleneck = Residual_block(in_dim,repeat_num)
+        bottleneck=[]
+        for i in range(repeat_num):
+            bottleneck.append( Residual_block(conv_dim,conv_dim,repeat_num))
+        self.bottlenecks =nn.Sequential(bottleneck)
 
 
         self.deconv1 = nn.ConvTranspose2d(conv_dim*4,conv_dim*2,kernel_size=4,stride=2,padding=1)
@@ -38,16 +57,20 @@ class Generator(nn.Module):
                                       self.conv4,self.tanh)
 
     def forward(self,x,c):
+        # 데이터구조를 알아야할듯. 왜 c와 x 처럼 되는지?
+        # c가 사용할 특징?
         c = c.view(c.size(0),c.size(1),1,1)
         c = c.repeat(1,1,x.size(2),x.size(3))
         x = torch.cat([x,c],dim=1)
 
-        G = nn.Sequential(self.Downsampling,self.bottleneck,self.Upsampling)
+        G = nn.Sequential(self.Downsampling,self.bottlenecks,self.Upsampling)
         return G(x)
 
 class Discriminator(nn.Module):
-    def __init__(self,img_size,conv_dim=64,c_dim=5,repeat_num):
-        layers=[]
+    def __init__(self,img_size,conv_dim=64,c_dim=5,repeat_num=6):
+        super(Discriminator,self).__init__()
+
+        layers = []
         layers.append(nn.Conv2d(3,conv_dim,kernel_size=4,stride=2,padding=1))
         layers.append(nn.LeakyReLU(inplace=True))
         #hidden layer
