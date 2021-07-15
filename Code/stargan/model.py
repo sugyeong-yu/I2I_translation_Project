@@ -50,7 +50,7 @@ class Generator(nn.Module):
         self.InsNorm5 = nn.InstanceNorm2d(conv_dim,affine=True)
 
         self.conv4 = nn.Conv2d(conv_dim,3+c_dim,kernel_size=7,stride=1,padding=3)
-        self.tanh = nn.Tanh()
+        self.tanh = nn.Tanh()#-1~1 사이값으로
 
         self.Upsampling=nn.Sequential(self.deconv1,self.InsNorm4,self.activation,
                                       self.deconv2,self.InsNorm5,self.activation,
@@ -88,6 +88,6 @@ class Discriminator(nn.Module):
 
     def forward(self,x):
         h=self.main(x)
-        out_src=self.src_d(h)
-        out_cls=self.cls_d(h)
+        out_src=self.src_d(h) # real? or fake?
+        out_cls=self.cls_d(h) # what domain?
         return out_src,out_cls.view(out_cls.size(0),out_cls.size(1))
